@@ -1,0 +1,11 @@
+---
+description: Rely on README.md as the source of truth for project goals and scope.
+alwaysApply: true
+---
+
+# Project scope — README is the source of truth
+
+- Treat **`README.md`** (repo root) as the authoritative definition of the project **goal** and **scope**.
+- Before proposing features, architecture, or large changes, check that they align with the README.
+- If work would expand beyond the README scope, call that out and ask before proceeding.
+- Prefer the README over assumptions from folder names, notebook titles, or prior chat when those conflict.

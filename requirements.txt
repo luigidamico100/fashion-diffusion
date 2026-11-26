@@ -1,0 +1,15 @@
+python-dotenv
+numpy
+Pillow
+matplotlib
+ipympl
+tqdm
+torch
+torchvision
+ipykernel
+diffusers
+transformers
+accelerate
+safetensors
+opencv-python
+-e ./DeCo-VTON

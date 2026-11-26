@@ -1,0 +1,19 @@
+---
+description: In Ask mode, keep explanations and advice simple and short unless detail is clearly needed.
+alwaysApply: true
+---
+
+# Ask mode — concise answers
+
+When in **Ask mode** and the user asks for explanations, advice, or clarification:
+
+- Answer in a **simple, direct** way.
+- Prefer a few short sentences over long essays.
+- Do **not** be verbose unless the question clearly needs depth (e.g. multi-step debugging, comparing several options, or the user asks to go deeper).
+- Skip filler, restating the question, and unnecessary caveats.
+- Lead with the answer; add detail only if it helps decide or understand.
+
+```text
+# ❌ BAD — long preamble + every tangential point
+# ✅ GOOD — one clear answer, then only the minimum needed context
+```

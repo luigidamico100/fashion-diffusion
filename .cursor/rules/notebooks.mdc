@@ -1,0 +1,61 @@
+---
+description: Notebooks under notebooks/ are ultra-thin orchestration; all logic lives in fashion_diffusion/. Also define/print I/O paths early (roots from paths.py).
+globs: "**/*.ipynb,fashion_diffusion/**/*.py"
+alwaysApply: false
+---
+
+# Notebooks vs source
+
+| Location | Role |
+|----------|------|
+| `notebooks/` | Ultra-high-level orchestration only |
+| `fashion_diffusion/` | All source code (logic, algorithms, training, data processing) |
+
+When **creating** or **modifying** a notebook, keep it extremely thin and make file I/O obvious.
+
+## Ultra-high-level notebooks only
+
+- A notebook is a short script of a few cells: imports, path setup, calling package functions, light inspection/plots, saving results.
+- **Few instructions** — each cell should mostly be one or a few calls into `fashion_diffusion/`, not multi-step inline logic.
+- Implement **all** lower-level logic in `fashion_diffusion/`, never inline in notebook cells.
+- Do not copy algorithms, loops, training code, fitting, or multi-step processing into the notebook.
+- When a notebook needs new behavior, add it under `fashion_diffusion/` first, then call it from the notebook.
+
+## Where paths live
+
+| Kind | Define / assign value in | Print in notebook early cell? |
+|------|--------------------------|-------------------------------|
+| **Input / output paths** | The notebook (this cell); path roots from `fashion_diffusion/paths.py` (`DATA_DIR`) | Yes |
+
+## Required early cell (notebook)
+
+After imports, include a dedicated early code cell that:
+
+1. **Defines and prints input paths** — every file/dir the notebook reads
+2. **Defines and prints output paths** — every file/dir the notebook writes (omit if read-only / visualization-only)
+
+```python
+from fashion_diffusion.paths import DATA_DIR
+
+# Input / output paths — defined here in the notebook
+images_dir = DATA_DIR / "images"
+metadata_path = DATA_DIR / "metadata.csv"
+outputs_dir = DATA_DIR / "outputs" / "eda"
+
+print("==== Input paths:")
+print(f"\timages_dir: {images_dir}")
+print(f"\tmetadata_path: {metadata_path}")
+
+print("\n==== Output paths:")
+print(f"\toutputs_dir: {outputs_dir}")
+```
+
+## I/O and print rules
+
+- Use section headers `==== Input paths:`, `==== Output paths:`.
+- One path per line; indent values with `\t`.
+- Print the **variable name and its resolved value** (not only a hard-coded string).
+- Keep this cell near the top (typically cell 1, right after imports).
+- When reorganizing: if paths are scattered, consolidate path definitions into this cell.
+- Optional inputs: still list them; label clearly if unset (e.g. `None (optional)`).
+- Do not bury new input/output paths only inside later cells without updating this summary cell.

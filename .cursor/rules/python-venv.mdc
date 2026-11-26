@@ -1,0 +1,13 @@
+---
+description: Always use the project .venv for any Python or pip command (agent Shell, scripts, notebooks).
+alwaysApply: true
+---
+
+# Python environment
+
+Use the project virtualenv at `.venv` for **every** Python/pip invocation in this repo (Shell tool, scripts, one-liners). Do not run conda/env discovery (`which python`, `conda info`, listing envs, etc.) unless a command fails with `ModuleNotFoundError`.
+
+- Python: `.venv/bin/python`
+- Pip: `.venv/bin/python -m pip`
+- Prefer `.venv/bin/python script.py` (or `uv run …` if already using uv) over `source .venv/bin/activate && python …`
+- Do not use bare `python`, `python3`, or system/conda interpreters.
