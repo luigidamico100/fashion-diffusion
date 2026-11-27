@@ -1,0 +1,28 @@
+---
+description: All dataset / data-root paths live in fashion_diffusion/paths.py (DATA_DIR from .env).
+alwaysApply: true
+---
+
+# Data paths
+
+All dataset / file / directory **roots** for this project live in `fashion_diffusion/paths.py` (today: `DATA_DIR` from `FASHION_DIFFUSION_DATA_DIR` in `.env`).
+
+## Do
+
+- Import path roots from `fashion_diffusion.paths` (code and notebooks).
+- When a new shared data root or well-known dataset subpath constant is needed, **add it to** `fashion_diffusion/paths.py` first, then import it.
+- Build notebook-specific input/output file paths in the notebook early I/O cell from those roots (see notebooks rule).
+
+## Do not
+
+- Hard-code absolute data roots or invent alternate env vars when an equivalent exists in `paths.py`.
+- Duplicate root definitions outside `paths.py`.
+
+```python
+# ❌ BAD
+data_dir = Path("/path/to/HR-VITON")
+
+# ✅ GOOD
+from fashion_diffusion.paths import DATA_DIR
+person_path = DATA_DIR / split / "image" / person_filename
+```

@@ -1,0 +1,23 @@
+---
+description: When changing how experiments write to disk, update only the generating code — leave existing on-disk experiment outputs untouched.
+alwaysApply: true
+---
+
+# Experiment outputs stay on disk as-is
+
+When the **save format, paths, filenames, or schema** of experiment outputs changes, modify only the **code/notebooks that produce them**.
+
+## Do
+
+- Update writers, serializers, path construction, and any related docs in source/notebooks.
+- Assume future runs will produce the new layout; old runs keep their current files.
+
+## Do not
+
+- Rewrite, migrate, rename, delete, or regenerate experiment outputs already present on disk to match the new convention.
+- Add one-off scripts whose only job is to convert historical experiment folders unless the user explicitly asks.
+
+```text
+# ❌ BAD — change how results are saved, then "fix up" existing experiment dirs
+# ✅ GOOD — change the generating code only; leave on-disk experiment outputs alone
+```

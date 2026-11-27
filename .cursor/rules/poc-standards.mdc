@@ -42,12 +42,12 @@ df = load(path)
 ```python
 # ❌ BAD — hides failures
 try:
-    result = load_patient_data(path)
+    result = load_pipeline(hf_repo)
 except Exception:
     result = None
 
 # ✅ GOOD — fail visibly
-result = load_patient_data(path)
+result = load_pipeline(hf_repo)
 ```
 
 ```python

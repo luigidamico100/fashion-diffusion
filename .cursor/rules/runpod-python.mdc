@@ -1,0 +1,35 @@
+---
+description: Use the RunPod system Python interpreter and keep requirements.txt in sync
+alwaysApply: true
+---
+
+# RunPod Python Environment
+
+When working on this project on a **RunPod** server:
+
+- Use the system interpreter: `/usr/local/bin/python` (Python 3.12)
+- Install all Python modules and libraries into that interpreter (via its `pip` / `pip3`)
+- Do **not** create or use a separate `.venv`, `venv`, conda env, or `uv` venv unless explicitly asked
+- Prefer `/usr/local/bin/python` and `/usr/local/bin/pip` (or `python -m pip`) for all installs and script runs
+
+## Keep `requirements.txt` updated
+
+Every time a package is installed (or uninstalled), update `requirements.txt` in the same change:
+
+- Add new top-level dependencies (match the existing unpinned style unless a pin is required)
+- Remove entries when uninstalling
+- Do not leave installs that are missing from `requirements.txt`
+
+```bash
+# ✅ GOOD
+/usr/local/bin/python -m pip install <package>
+# then add <package> to requirements.txt
+
+/usr/local/bin/python script.py
+
+# ❌ BAD
+python3 -m venv .venv
+source .venv/bin/activate
+uv venv
+pip install <package>  # without updating requirements.txt
+```

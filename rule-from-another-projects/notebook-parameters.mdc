@@ -1,0 +1,58 @@
+---
+description: Put notebook tunables in parameters.py grouped by pipeline (Beyond Shape methods + shared/nomo3d/playgrounds); import and print them in the notebook early cell — do not redefine values in the notebook or in config.py.
+globs: "**/*.ipynb,anthropometric_measurements/parameters.py"
+alwaysApply: false
+---
+
+# Notebook Parameters
+
+When **creating** or **modifying** a notebook (or `parameters.py` for notebook tunables), keep tunable values in `parameters.py`, not in the notebook and not in `config.py` (paths stay in `config.py`).
+
+## Where parameters live
+
+- Define / assign tunables in `anthropometric_measurements/parameters.py`.
+- Import them in the notebook; print them in the early I/O cell (see notebook I/O rule).
+- Do **not** redefine parameter values in the notebook once they live in `parameters.py`.
+
+## Groups in `parameters.py` — by pipeline
+
+Beyond Shape has two independent pipelines under `notebooks_beyondshape/`:
+
+- `method_template`
+- `method_template_measures_on_subject`
+
+Group parameters by **pipeline**, not by individual notebooks.
+
+- **Pipeline-specific** tunables (including that method’s `step_by_step` / playgrounds under the same folder) go in that pipeline’s section. Header = pipeline name + folder path.
+- **Shared** tunables used by two or more pipelines go in a **Shared** section that lists those pipeline names — one assignment only; do not duplicate values across sections.
+- Other top-level pipelines (`notebooks_nomo3d/`) and non-method playgrounds get their own sections the same way.
+- Before each section: pipeline name(s), a brief description of each parameter, then the assignments.
+
+```python
+# ---------------------------------------------------------------------------
+# Shared — method_template, method_template_measures_on_subject
+# ---------------------------------------------------------------------------
+# ALIGN_TO_ANATOMICAL_AXES: after SMPL fit, rigid-align before NICP
+ALIGN_TO_ANATOMICAL_AXES = True
+
+# ---------------------------------------------------------------------------
+# Pipeline: nomo3d
+# notebooks_nomo3d/
+# ---------------------------------------------------------------------------
+# INFERENCE_GENDER: sex for the inference STL
+INFERENCE_GENDER = "female"
+```
+
+## Print in the notebook early cell
+
+After importing from `parameters`, print each used parameter under `==== Parameters:` (omit the section if none). One parameter per line; indent with `\t`; print the variable name and its value.
+
+```python
+from anthropometric_measurements.parameters import ALIGN_TO_ANATOMICAL_AXES, PATH_N_SECTORS
+
+print("\n==== Parameters:")
+print(f"\tALIGN_TO_ANATOMICAL_AXES: {ALIGN_TO_ANATOMICAL_AXES}")
+print(f"\tPATH_N_SECTORS: {PATH_N_SECTORS}")
+```
+
+When reorganizing: if parameters are defined in the notebook, move them to `parameters.py` and print the imported values in the early cell.
