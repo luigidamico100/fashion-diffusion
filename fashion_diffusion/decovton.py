@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import numpy as np
@@ -9,6 +10,15 @@ from decovton import DeCoVTONPipeline
 from fashion_diffusion.config import DEVICE
 
 DIFF_THRESHOLD = 30
+
+
+class _DropVaeFp32ToWarning(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return "should be kept in float32" not in record.getMessage()
+
+
+# Child logger emits this; parent-logger filters are skipped on propagation.
+logging.getLogger("diffusers.models.modeling_utils").addFilter(_DropVaeFp32ToWarning())
 
 
 def load_pipeline(hf_repo: str, subfolder: str, dtype: torch.dtype) -> DeCoVTONPipeline:
@@ -84,6 +94,67 @@ def run_tryon(
 def save_result(image: Image.Image, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path)
+    return path
+
+
+def save_gt_vs_result(gt: Image.Image, result: Image.Image, path: Path) -> Path:
+    import matplotlib.pyplot as plt
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig, axes = plt.subplots(1, 2, figsize=(8, 6))
+    axes[0].imshow(gt)
+    axes[0].set_title("GT")
+    axes[0].axis("off")
+    axes[1].imshow(result)
+    axes[1].set_title("generated")
+    axes[1].axis("off")
+    fig.tight_layout()
+    fig.savefig(path, bbox_inches="tight")
+    plt.close(fig)
+    return path
+
+
+def save_person_cloth_result(
+    person: Image.Image,
+    cloth: Image.Image,
+    agnostic: Image.Image,
+    mask: Image.Image,
+    result: Image.Image,
+    path: Path,
+    agnostic_title: str,
+    mask_title: str,
+    figure_title: str,
+) -> Path:
+    import matplotlib.pyplot as plt
+    from matplotlib.gridspec import GridSpec
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig = plt.figure(figsize=(14, 9))
+    gs = GridSpec(2, 4, figure=fig)
+    ax_person = fig.add_subplot(gs[0, 0])
+    ax_cloth = fig.add_subplot(gs[0, 1])
+    ax_agnostic = fig.add_subplot(gs[1, 0])
+    ax_mask = fig.add_subplot(gs[1, 1])
+    ax_result = fig.add_subplot(gs[:, 2:])
+    ax_person.imshow(person)
+    ax_person.set_title("Person")
+    ax_person.axis("off")
+    ax_cloth.imshow(cloth)
+    ax_cloth.set_title("Cloth")
+    ax_cloth.axis("off")
+    ax_agnostic.imshow(agnostic)
+    ax_agnostic.set_title(agnostic_title)
+    ax_agnostic.axis("off")
+    ax_mask.imshow(mask.convert("L"), cmap="gray")
+    ax_mask.set_title(mask_title)
+    ax_mask.axis("off")
+    ax_result.imshow(result)
+    ax_result.set_title("Generated")
+    ax_result.axis("off")
+    fig.suptitle(figure_title)
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
+    fig.savefig(path, bbox_inches="tight")
+    plt.close(fig)
     return path
 
 
