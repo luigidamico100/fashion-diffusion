@@ -1,6 +1,10 @@
 # Secrets / local env
 .env
 
+# Local career / portfolio intent (not for the public repo)
+.cursor/rules/portfolio-intent.mdc
+NEXTSTEP.md
+
 # Vendored upstream clone (use submodule or local clone)
 DeCo-VTON/
 
@@ -26,3 +30,4 @@ build/
 *.pth
 *.ckpt
 *.safetensors
+/docs/papers

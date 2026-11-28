@@ -14,13 +14,16 @@ This repository is a **proof of concept**, not production code. Optimize for cla
 - Prefer flat, linear logic over deep abstractions. Avoid unnecessary helpers or nested functions.
 - Do not split code into many small functions unless reuse or clarity clearly benefits.
 - Match existing project style; do not over-engineer. Do not add gratuitous newlines; keep one instruction per line.
+- Do **not** use `sys.path.insert` / `sys.path.append` to make imports work. Use proper package installs (editable `-e .` / `-e ./DeCo-VTON`).
 
 ## No fallbacks — one path only
 
 - Do **not** add fallback branches, alternate code paths, or "if that fails, try this instead" logic.
 - Do **not** paper over missing/invalid data with defaults (`or []`, `get(key, default)`, `if x is None: x = ...`) unless the user explicitly asks for that behavior.
+- Do **not** add convenience dual-paths (e.g. "local dir **or** HF download", "env var **or** hard-coded default") unless asked.
+- Prefer required parameters over optional defaults that invent behavior; the caller should pass what is needed.
 - Prefer one clear happy path. If a required value/file/key is missing, let it fail loudly rather than inventing a substitute.
-- Fallbacks hide bugs and make the code harder to reason about; skip them.
+- Fallbacks hide bugs and make the code harder to reason about; skip them. Keep PoC helpers short — strip unused branches.
 
 ```python
 # ❌ BAD — fallback hides the problem
@@ -30,6 +33,20 @@ df = load(path) if path.exists() else pd.DataFrame()
 # ✅ GOOD — require the real input; fail if absent
 path = config["data_path"]
 df = load(path)
+```
+
+```python
+# ❌ BAD — dual-path + default arg for a PoC helper
+def load_model(repo: str = DEFAULT_REPO):
+    path = Path(repo)
+    if not path.is_dir():
+        path = Path(snapshot_download(repo_id=repo))
+    return build(path)
+
+# ✅ GOOD — one required input, one path
+def load_model(repo: str):
+    path = Path(snapshot_download(repo_id=repo))
+    return build(path)
 ```
 
 ## Error handling — fail fast

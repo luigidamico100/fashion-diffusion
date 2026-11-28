@@ -6,16 +6,18 @@ from diffusers.image_processor import VaeImageProcessor
 from PIL import Image
 from decovton import DeCoVTONPipeline
 
+from fashion_diffusion.config import DEVICE
+
 DIFF_THRESHOLD = 30
 
 
-def load_pipeline(hf_repo: str, subfolder: str, device: str, dtype: torch.dtype) -> DeCoVTONPipeline:
+def load_pipeline(hf_repo: str, subfolder: str, dtype: torch.dtype) -> DeCoVTONPipeline:
     pipe = DeCoVTONPipeline.from_vton_checkpoint(
         hf_repo=hf_repo,
         subfolder=subfolder,
         torch_dtype=dtype,
     )
-    return pipe.to(device)
+    return pipe.to(DEVICE)
 
 
 def agnostic_mask_from_pair(person_pil: Image.Image, agnostic_pil: Image.Image, height: int, width: int) -> Image.Image:
@@ -85,6 +87,19 @@ def save_result(image: Image.Image, path: Path) -> Path:
     return path
 
 
+def _show_figure(fig) -> None:
+    import io
+
+    import matplotlib.pyplot as plt
+    from IPython.display import Image, display
+
+    fig.tight_layout()
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", bbox_inches="tight")
+    plt.close(fig)
+    display(Image(data=buf.getvalue()))
+
+
 def show_inputs(person_path: Path, cloth_path: Path, agnostic_path: Path) -> None:
     import matplotlib.pyplot as plt
 
@@ -101,8 +116,21 @@ def show_inputs(person_path: Path, cloth_path: Path, agnostic_path: Path) -> Non
     axes[2].imshow(agnostic)
     axes[2].set_title(f"agnostic {np.asarray(agnostic).shape}")
     axes[2].axis("off")
-    plt.tight_layout()
-    plt.show()
+    _show_figure(fig)
+
+
+def show_person_mask(person_path: Path, mask_pil: Image.Image) -> None:
+    import matplotlib.pyplot as plt
+
+    person = Image.open(person_path)
+    fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+    axes[0].imshow(person)
+    axes[0].set_title(f"person {np.asarray(person).shape}")
+    axes[0].axis("off")
+    axes[1].imshow(mask_pil.convert("L"), cmap="gray")
+    axes[1].set_title(f"mask {np.asarray(mask_pil.convert('L')).shape}")
+    axes[1].axis("off")
+    _show_figure(fig)
 
 
 def show_person_cloth_mask(person_path: Path, cloth_path: Path, mask_pil: Image.Image) -> None:
@@ -120,8 +148,7 @@ def show_person_cloth_mask(person_path: Path, cloth_path: Path, mask_pil: Image.
     axes[2].imshow(mask_pil.convert("L"), cmap="gray")
     axes[2].set_title(f"mask {np.asarray(mask_pil.convert('L')).shape}")
     axes[2].axis("off")
-    plt.tight_layout()
-    plt.show()
+    _show_figure(fig)
 
 
 def show_condition_and_mask(condition: torch.Tensor, mask: torch.Tensor) -> None:
@@ -136,8 +163,7 @@ def show_condition_and_mask(condition: torch.Tensor, mask: torch.Tensor) -> None
     axes[1].imshow(mask_img, cmap="gray")
     axes[1].set_title(f"mask {tuple(mask.shape)}")
     axes[1].axis("off")
-    plt.tight_layout()
-    plt.show()
+    _show_figure(fig)
 
 
 def show_result(person_path: Path, cloth_path: Path, result: Image.Image) -> None:
@@ -155,5 +181,4 @@ def show_result(person_path: Path, cloth_path: Path, result: Image.Image) -> Non
     axes[2].imshow(result)
     axes[2].set_title("try-on")
     axes[2].axis("off")
-    plt.tight_layout()
-    plt.show()
+    _show_figure(fig)

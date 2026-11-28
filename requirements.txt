@@ -12,4 +12,7 @@ transformers
 accelerate
 safetensors
 opencv-python
+torchmetrics
+lpips
+-e .
 -e ./DeCo-VTON

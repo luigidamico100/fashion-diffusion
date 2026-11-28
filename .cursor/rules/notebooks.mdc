@@ -15,11 +15,18 @@ When **creating** or **modifying** a notebook, keep it extremely thin and make f
 
 ## Ultra-high-level notebooks only
 
-- A notebook is a short script of a few cells: imports, path setup, calling package functions, light inspection/plots, saving results.
+- A notebook is a short script of a few cells: imports, path setup, calling package functions, light inspection/plots, and (outside playground) saving results.
 - **Few instructions** — each cell should mostly be one or a few calls into `fashion_diffusion/`, not multi-step inline logic.
 - Implement **all** lower-level logic in `fashion_diffusion/`, never inline in notebook cells.
 - Do not copy algorithms, loops, training code, fitting, or multi-step processing into the notebook.
 - When a notebook needs new behavior, add it under `fashion_diffusion/` first, then call it from the notebook.
+- Do **not** use `sys.path.insert` / `sys.path.append`. Import `fashion_diffusion` via the editable install (`-e .` in `requirements.txt`).
+
+## Playground notebooks (`notebooks/playground/`)
+
+- **No disk outputs.** Display results inline only (plots / images in the notebook).
+- Do **not** save files, create folders under `notebooks/playground/`, or define `==== Output paths:`.
+- Helpers called from playground notebooks must not leave files in the notebook cwd (use system temp dirs if intermediates are needed).
 
 ## Where paths live
 
